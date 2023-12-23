@@ -1,6 +1,7 @@
 package com.nageoffer.shortlink.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -26,6 +27,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.nageoffer.shortlink.admin.common.constant.RedisCacheConstant.LOCK_USER_REGISTER_KEY;
@@ -103,6 +105,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         UserDO userDO = baseMapper.selectOne(queryWrapper);
         if (userDO == null) {
             throw new ClientException("用户不存在");
+        }
+        Map<Object ,Object> hasLoginMap = stringRedisTemplate.opsForHash().entries("login_" + requestParam.getUsername());
+        if (CollUtil.isNotEmpty(hasLoginMap)) {
+            String token = hasLoginMap.keySet().stream()
+                    .findFirst()
+                    .map(Object::toString)
+                    .orElseThrow(() -> new ClientException("用户登录错误"));
+            return new UserLoginRespDTO(token);
         }
         /**
          * Hash
