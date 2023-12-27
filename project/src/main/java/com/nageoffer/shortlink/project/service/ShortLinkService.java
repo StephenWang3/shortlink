@@ -9,6 +9,8 @@ import com.nageoffer.shortlink.project.dto.req.ShortLinkUpdateReqDTO;
 import com.nageoffer.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.nageoffer.shortlink.project.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.nageoffer.shortlink.project.dto.resp.ShortLinkPageRespDTO;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,6 +20,15 @@ import java.util.List;
  */
 @RestController
 public interface ShortLinkService extends IService<ShortLinkDO> {
+
+    /**
+     * 短链接跳转
+     *
+     * @param shortUri 短链接后缀
+     * @param request  HTTP 请求
+     * @param response HTTP 响应
+     */
+    void restoreUrl(String shortUri, ServletRequest request, ServletResponse response);
 
     /**
      * 创建短链接
