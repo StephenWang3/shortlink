@@ -1,5 +1,6 @@
 package com.nageoffer.shortlink.admin.remote.dto;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
@@ -7,10 +8,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nageoffer.shortlink.admin.common.convention.result.Result;
 import com.nageoffer.shortlink.admin.remote.dto.req.ShortLinkCreateReqDTO;
 import com.nageoffer.shortlink.admin.remote.dto.req.ShortLinkPageReqDTO;
+import com.nageoffer.shortlink.admin.remote.dto.req.ShortLinkStatsReqDTO;
 import com.nageoffer.shortlink.admin.remote.dto.req.ShortLinkUpdateReqDTO;
 import com.nageoffer.shortlink.admin.remote.dto.resp.ShortLinkCreateRespDTO;
 import com.nageoffer.shortlink.admin.remote.dto.resp.ShortLinkGroupCountQueryRespDTO;
 import com.nageoffer.shortlink.admin.remote.dto.resp.ShortLinkPageRespDTO;
+import com.nageoffer.shortlink.admin.remote.dto.resp.ShortLinkStatsRespDTO;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
@@ -83,6 +86,18 @@ public interface ShortLinkRemoteService {
     default Result<String> getTitleByUrl(@RequestParam("url") String url) {
         String resultStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/title?url=" + url);
         return JSON.parseObject(resultStr, new TypeReference<>() {
+        });
+    }
+
+    /**
+     * 访问单个短链接指定时间内监控数据
+     *
+     * @param requestParam 访问短链接监控请求参数
+     * @return 短链接监控信息
+     */
+    default Result<ShortLinkStatsRespDTO> oneShortLinkStats(ShortLinkStatsReqDTO requestParam) {
+        String resultBodyStr = HttpUtil.get("http://127.0.0.1:8001/api/short-link/v1/stats", BeanUtil.beanToMap(requestParam));
+        return JSON.parseObject(resultBodyStr, new TypeReference<>() {
         });
     }
 }
