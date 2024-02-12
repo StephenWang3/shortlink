@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.nageoffer.shortlink.admin.common.convention.result.Result;
 import com.nageoffer.shortlink.admin.remote.dto.req.*;
 import com.nageoffer.shortlink.admin.remote.dto.resp.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
@@ -30,6 +32,26 @@ public interface ShortLinkRemoteService {
         return JSON.parseObject(resultBodyStr, new TypeReference<>() {
         });
     }
+
+    /**
+     * 批量创建短链接
+     *
+     * @param requestParam 批量创建短链接请求参数
+     * @return 短链接批量创建响应
+     */
+    @PostMapping("/api/short-link/v1/create/batch")
+    default Result<ShortLinkBatchCreateRespDTO> batchCreateShortLink(@RequestBody ShortLinkBatchCreateReqDTO requestParam) {
+        Map<String, Object> requestMap = new HashMap<>();
+        requestMap.put("originUrls", requestParam.getOriginUrls());
+        requestMap.put("describes", requestParam.getDescribes());
+        requestMap.put("gid", requestParam.getGid());
+        requestMap.put("createdType", requestParam.getCreatedType());
+        requestMap.put("validDateType", requestParam.getValidDateType());
+        requestMap.put("validDate", requestParam.getValidDate());
+        String resultBodyStr = HttpUtil.post("http://127.0.0.1:8001/api/short-link/v1/create/batch", requestMap);
+        return JSON.parseObject(resultBodyStr, new TypeReference<>() {
+        });
+    };
 
     /**
      * 修改短链接
